@@ -44,10 +44,20 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
 
-  const signInWithEmail = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const signInWithEmail = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login successful, user data:", {
+        uid: userCredential
+      });
+      console.log("Email Login Response:", userCredential.user);
+      return userCredential;
+    } catch (error) {
+      console.error("Email Login Error:", error);
+      throw error; // Re-throw for error handling in the UI
+    }
   };
-
+ console.log("signInWithEmail",signInWithEmail)
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);

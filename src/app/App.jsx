@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 // ROOT THEME PROVIDER
@@ -18,7 +19,9 @@ export default function App() {
       <AuthProvider>
         <MatxTheme>
           <CssBaseline />
-          {content}
+          <Suspense fallback={<div>Loading...</div>}>
+            {content}
+          </Suspense>
         </MatxTheme>
       </AuthProvider>
     </SettingsProvider>

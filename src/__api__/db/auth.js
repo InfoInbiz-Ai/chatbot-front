@@ -38,6 +38,7 @@ Mock.onPost("/api/auth/login").reply(async (config) => {
 Mock.onPost("/api/auth/register").reply((config) => {
   try {
     const { email, username } = JSON.parse(config.data);
+
     const user = userList.find((u) => u.email === email);
 
     if (user) return [400, { message: "User already exists!" }];

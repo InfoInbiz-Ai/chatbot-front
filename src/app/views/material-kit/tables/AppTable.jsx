@@ -20,9 +20,9 @@ export default function AppTable() {
         <Breadcrumb routeSegments={[{ name: "Material", path: "/material" }, { name: "Table" }]} />
       </Box>
 
-      <SimpleCard title="Simple Table">
+      {/* <SimpleCard title="Simple Table">
         <SimpleTable />
-      </SimpleCard>
+      </SimpleCard> */}
 
       <SimpleCard title="Pagination Table">
         <PaginationTable />
