@@ -123,7 +123,7 @@ export default function FirebaseLogin() {
           <Grid size={{ md: 6, xs: 12 }}>
             <div className="cardLeft">
               <Logo>
-                <MatxLogo /> <span>MatX Pro</span>
+        <MatxLogo style={{ width: "20%", height: "auto", maxWidth: 150 }} /> <span>DEKHO WOOD</span>
               </Logo>
 
               <h1 className="mainTitle">Admin Dashboard</h1>
@@ -225,7 +225,8 @@ export default function FirebaseLogin() {
                       color="primary"
                       loading={isSubmitting}
                       variant="contained"
-                      sx={{ my: 2 }}>
+                      sx={{ my: 2 }}
+                      >
                       Login
                     </LoadingButton>
 

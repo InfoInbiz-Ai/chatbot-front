@@ -27,9 +27,10 @@ export default function Brand({ children }) {
   return (
     <BrandRoot>
       <Box display="flex" alignItems="center">
-        <MatxLogo />
+      <MatxLogo style={{ width: "40%", height: "auto", maxWidth: 150 }} />
+
         <StyledSpan mode={mode} className="sidenavHoverShow">
-          Matx
+          DEKHO WOOD
         </StyledSpan>
       </Box>
 
