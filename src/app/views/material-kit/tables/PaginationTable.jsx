@@ -1,3 +1,5 @@
+// src/material-kit/tables/PaginationTable.jsx
+
 import { useState } from "react";
 import {
   Box,
@@ -9,10 +11,12 @@ import {
   TableCell,
   TableHead,
   IconButton,
-  TablePagination
+  TablePagination,
+  TextField,
+  Button,
+  Stack
 } from "@mui/material";
 
-// STYLED COMPONENT
 const StyledTable = styled(Table)(() => ({
   whiteSpace: "pre",
   "& thead": {
@@ -23,75 +27,16 @@ const StyledTable = styled(Table)(() => ({
   }
 }));
 
-const subscribarList = [
-  {
-    name: "john doe",
-    date: "18 january, 2019",
-    amount: 1000,
-    status: "close",
-    company: "ABC Fintech LTD."
-  },
-  {
-    name: "kessy bryan",
-    date: "10 january, 2019",
-    amount: 9000,
-    status: "open",
-    company: "My Fintech LTD."
-  },
-  {
-    name: "kessy bryan",
-    date: "10 january, 2019",
-    amount: 9000,
-    status: "open",
-    company: "My Fintech LTD."
-  },
-  {
-    name: "james cassegne",
-    date: "8 january, 2019",
-    amount: 5000,
-    status: "close",
-    company: "Collboy Tech LTD."
-  },
-  {
-    name: "lucy brown",
-    date: "1 january, 2019",
-    amount: 89000,
-    status: "open",
-    company: "ABC Fintech LTD."
-  },
-  {
-    name: "lucy brown",
-    date: "1 january, 2019",
-    amount: 89000,
-    status: "open",
-    company: "ABC Fintech LTD."
-  },
-  {
-    name: "lucy brown",
-    date: "1 january, 2019",
-    amount: 89000,
-    status: "open",
-    company: "ABC Fintech LTD."
-  },
-  {
-    name: "lucy brown",
-    date: "1 january, 2019",
-    amount: 89000,
-    status: "open",
-    company: "ABC Fintech LTD."
-  },
-  {
-    name: "lucy brown",
-    date: "1 january, 2019",
-    amount: 89000,
-    status: "open",
-    company: "ABC Fintech LTD."
-  }
-];
-
-export default function PaginationTable() {
+const PaginationTable = ({ data,columns, onUpdate, onDelete }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [editingRow, setEditingRow] = useState(null);
+  const [editForm, setEditForm] = useState({
+    userQuestion: "",
+    botResponse: "",
+    includeWords: "",
+    startWith: ""
+  });
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
@@ -102,51 +47,103 @@ export default function PaginationTable() {
     setPage(0);
   };
 
+  const handleEditClick = (index) => {
+    setEditingRow(index);
+    setEditForm(data[index]);
+  };
+
+  const handleCancel = () => {
+    setEditingRow(null);
+  };
+
+  const handleSave = () => {
+    if (editingRow === null) return;
+    const rowId = data[editingRow].id;
+    onUpdate(rowId, editForm);
+    setEditingRow(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm({ ...editForm, [name]: value });
+  };
+
+  const handleDeleteClick = (index) => {
+    const rowId = data[index].id;
+    onDelete(rowId);
+    if (editingRow === index) setEditingRow(null);
+  };
+
   return (
     <Box width="100%" overflow="auto">
-      <StyledTable>
+ <StyledTable>
         <TableHead>
           <TableRow>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="center">Company</TableCell>
-            <TableCell align="center">Start Date</TableCell>
-            <TableCell align="center">Status</TableCell>
-            <TableCell align="center">Amount</TableCell>
-            <TableCell align="right">Action</TableCell>
+            {columns.map((col) => (
+              <TableCell key={col.field}>{col.label}</TableCell>
+            ))}
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {subscribarList
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((subscriber, index) => (
-              <TableRow key={index}>
-                <TableCell align="left">{subscriber.name}</TableCell>
-                <TableCell align="center">{subscriber.company}</TableCell>
-                <TableCell align="center">{subscriber.date}</TableCell>
-                <TableCell align="center">{subscriber.status}</TableCell>
-                <TableCell align="center">${subscriber.amount}</TableCell>
+          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+            const actualIndex = page * rowsPerPage + index;
+            const isEditing = editingRow === actualIndex;
+
+            return (
+              <TableRow key={row.id}>
+                {columns.map((col) => (
+                  <TableCell key={col.field}>
+                    {isEditing ? (
+                      <TextField
+                        fullWidth
+                        name={col.field}
+                        value={editForm[col.field] || ""}
+                        onChange={handleInputChange}
+                        variant="standard"
+                      />
+                    ) : (
+                      row[col.field]
+                    )}
+                  </TableCell>
+                ))}
+
                 <TableCell align="right">
-                  <IconButton>
-                    <Icon color="error">close</Icon>
-                  </IconButton>
+                  {isEditing ? (
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <Button variant="contained" size="small" onClick={handleSave}>Save</Button>
+                      <Button variant="outlined" size="small" onClick={handleCancel}>Cancel</Button>
+                    </Stack>
+                  ) : (
+                    <Box>
+                      <IconButton onClick={() => handleEditClick(actualIndex)} size="small">
+                        <Icon color="primary">edit</Icon>
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteClick(actualIndex)} size="small">
+                        <Icon color="error">delete</Icon>
+                      </IconButton>
+                    </Box>
+                  )}
                 </TableCell>
               </TableRow>
-            ))}
+            );
+          })}
         </TableBody>
       </StyledTable>
 
       <TablePagination
         sx={{ px: 2 }}
-        page={page}
         component="div"
-        rowsPerPage={rowsPerPage}
-        count={subscribarList.length}
+        count={data.length}
+        page={page}
         onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        nextIconButtonProps={{ "aria-label": "Next Page" }}
-        backIconButtonProps={{ "aria-label": "Previous Page" }}
       />
     </Box>
   );
-}
+};
+
+export default PaginationTable;

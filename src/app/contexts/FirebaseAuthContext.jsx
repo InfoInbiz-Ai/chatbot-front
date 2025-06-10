@@ -1,99 +1,129 @@
 import { createContext, useEffect, useReducer } from "react";
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  signOut,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
-} from "firebase/auth";
-// FIREBASE CONFIGURATION
-import { firebaseConfig } from "app/config";
-// GLOBAL CUSTOM COMPONENT
+import axios from "axios";
 import Loading from "app/components/MatxLoading";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+const AuthContext = createContext({
+  user: null,
+  isInitialized: false,
+  isAuthenticated: false,
+  method: "CUSTOM_BACKEND",
+  signInWithEmail: () => {},
+  createUserWithEmail: () => {},
+  logout: () => {},
+  signInWithLine: () => {},
+});
 
 const initialAuthState = {
   user: null,
   isInitialized: false,
-  isAuthenticated: false
+  isAuthenticated: false,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FB_AUTH_STATE_CHANGED": {
-      const { isAuthenticated, user } = action.payload;
-      return { ...state, isAuthenticated, isInitialized: true, user };
-    }
-
-    default: {
+    case "AUTH_STATE_CHANGED":
+      return {
+        ...state,
+        isAuthenticated: action.payload.isAuthenticated,
+        isInitialized: true,
+        user: action.payload.user,
+      };
+    default:
       return state;
-    }
   }
 };
-
-const AuthContext = createContext({
-  ...initialAuthState,
-  method: "FIREBASE"
-});
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
 
   const signInWithEmail = async (email, password) => {
+    const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+    console.log('user',response)
+    const userData = response.data;
+
+    const user = {
+      id: userData.uid,
+      email: userData.email,
+      avatar: userData.providerData?.[0]?.photoURL || null,
+      name: userData.providerData?.[0]?.displayName || userData.email,
+      token: userData.stsTokenManager.accessToken,
+    };
+
+    localStorage.setItem("accessToken", user.token);
+    dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: true, user } });
+
+    return user;
+  };
+  const signInWithLine = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful, user data:", {
-        uid: userCredential
+      // Check if we have a token in localStorage
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        throw new Error("No access token found");
+      }
+  
+      // Verify the token with your backend if needed
+      const response = await axios.get(`${API_BASE_URL}/verify-token`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Email Login Response:", userCredential.user);
-      return userCredential;
+  
+      const userData = response.data;
+      const user = {
+        id: userData.uid,
+        email: userData.email,
+        avatar: userData.providerData?.[0]?.photoURL || null,
+        name: userData.providerData?.[0]?.displayName || 'LINE User',
+        token: token,
+      };
+  
+      dispatch({ 
+        type: "AUTH_STATE_CHANGED", 
+        payload: { 
+          isAuthenticated: true, 
+          user 
+        } 
+      });
+  
+      return user;
     } catch (error) {
-      console.error("Email Login Error:", error);
-      throw error; // Re-throw for error handling in the UI
+      console.error('LINE login failed:', error);
+      throw error;
     }
   };
- console.log("signInWithEmail",signInWithEmail)
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+
+  const createUserWithEmail = async (email, password) => {
+    const response = await axios.post(`${API_BASE_URL}/signup`, { email, password });
+    return response.data;
   };
 
-  const createUserWithEmail = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  const logout = () => {
+    localStorage.removeItem("accessToken");
+    dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: false, user: null } });
   };
 
-  const logout = () => signOut(auth);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch({
-          type: "FB_AUTH_STATE_CHANGED",
-          payload: {
-            isAuthenticated: true,
-            user: {
-              id: user.uid,
-              email: user.email,
-              avatar: user.photoURL,
-              name: user.displayName || user.email
-            }
-          }
-        });
-      } else {
-        dispatch({
-          type: "FB_AUTH_STATE_CHANGED",
-          payload: { isAuthenticated: false, user: null }
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, [dispatch]);
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      dispatch({
+        type: "AUTH_STATE_CHANGED",
+        payload: {
+          isAuthenticated: true,
+          user: {
+            id: "local-user",
+            email: "user@example.com",
+            name: "User",
+            avatar: null,
+            token,
+          },
+        },
+      });
+    } else {
+      dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: false, user: null } });
+    }
+  }, []);
 
   if (!state.isInitialized) return <Loading />;
 
@@ -101,15 +131,17 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         ...state,
-        logout,
-        signInWithGoogle,
-        method: "FIREBASE",
+        method: "CUSTOM_BACKEND",
         signInWithEmail,
-        createUserWithEmail
-      }}>
+        createUserWithEmail,
+        logout,
+        signInWithLine,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
 export default AuthContext;
+

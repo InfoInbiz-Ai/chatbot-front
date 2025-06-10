@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid2";
 import { styled, useTheme } from "@mui/material/styles";
 
-import RowCards from "./shared/RowCards";
+// import RowCards from "./shared/RowCards";
 import StatCards from "./shared/StatCards";
 import Campaigns from "./shared/Campaigns";
 import StatCards2 from "./shared/StatCards2";
@@ -49,8 +49,8 @@ export default function Analytics() {
             <TopSellingTable />
             <StatCards2 />
 
-            <H4>Ongoing Projects</H4>
-            <RowCards />
+            <H4>Training Data</H4>
+            {/* <RowCards /> */}
           </Grid>
 
           <Grid size={{ md: 4, xs: 12 }}>

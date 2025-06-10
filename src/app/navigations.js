@@ -39,6 +39,13 @@ const navigations = [
     children: [{ name: "Echarts", path: "/charts/echarts", iconText: "E" }]
   },
   {
+    name: "Bot Training",
+    icon: "android",
+    children: [{ name: "Bot Training Data", path: "/training/bot-training", iconText: "E" },
+      { name: "Training Category", path: "/training/training-category", iconText: "E" }
+    ]
+  },
+  {
     name: "Documentation",
     icon: "launch",
     type: "extLink",

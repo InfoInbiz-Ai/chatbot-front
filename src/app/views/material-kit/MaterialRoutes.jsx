@@ -6,7 +6,7 @@ const AppMenu = Loadable(lazy(() => import("./menu/AppMenu")));
 const AppIcon = Loadable(lazy(() => import("./icons/AppIcon")));
 const AppProgress = Loadable(lazy(() => import("./AppProgress")));
 const AppRadio = Loadable(lazy(() => import("./radio/AppRadio")));
-const AppTable = Loadable(lazy(() => import("./tables/AppTable")));
+const AppTable = Loadable(lazy(() => import("../usertraining/AppTable")));
 const AppSwitch = Loadable(lazy(() => import("./switch/AppSwitch")));
 const AppSlider = Loadable(lazy(() => import("./slider/AppSlider")));
 const AppDialog = Loadable(lazy(() => import("./dialog/AppDialog")));
@@ -17,7 +17,7 @@ const AppAutoComplete = Loadable(lazy(() => import("./auto-complete/AppAutoCompl
 const AppExpansionPanel = Loadable(lazy(() => import("./expansion-panel/AppExpansionPanel")));
 
 const materialRoutes = [
-  { path: "/material/table", element: <AppTable /> },
+  // { path: "/material/table", element: <AppTable /> },
   { path: "/material/form", element: <AppForm /> },
   { path: "/material/buttons", element: <AppButton /> },
   { path: "/material/icons", element: <AppIcon /> },

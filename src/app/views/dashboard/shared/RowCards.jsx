@@ -1,94 +1,147 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import {
+  Box,
+  Card,
+  Checkbox,
+  Grid,
+  Fab,
+  Avatar,
+  IconButton,
+  TextField
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-import Box from "@mui/material/Box";
-import Fab from "@mui/material/Fab";
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid2";
-import Avatar from "@mui/material/Avatar";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import { styled } from "@mui/material/styles";
-import MoreVert from "@mui/icons-material/MoreVert";
-import DateRange from "@mui/icons-material/DateRange";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import StarOutline from "@mui/icons-material/StarOutline";
+import DateRange from "@mui/icons-material/DateRange";
+import { styled } from "@mui/material/styles";
 import format from "date-fns/format";
-import { Span } from "app/components/Typography";
+import SaveIcon from '@mui/icons-material/Save'; 
 
-// STYLED COMPONENTS
-const ProjectName = styled(Span)(({ theme }) => ({
+const ProjectName = styled("span")(({ theme }) => ({
   marginLeft: 24,
   fontWeight: "500",
-  [theme.breakpoints.down("sm")]: { marginLeft: 4 }
+  [theme.breakpoints.down("sm")]: { marginLeft: 4 },
 }));
 
 const StyledFabStar = styled(Fab)(({ theme }) => ({
-  marginLeft: 0,
   boxShadow: "none",
-  background: "#08ad6c !important",
   backgroundColor: "rgba(9, 182, 109, 1) !important",
-  [theme.breakpoints.down("sm")]: { display: "none" }
-}));
-
-const StyledFab = styled(Fab)(({ theme }) => ({
-  marginLeft: 0,
-  boxShadow: "none",
-  color: "white !important",
-  background: `${theme.palette.error.main} !important`,
-  [theme.breakpoints.down("sm")]: { display: "none" }
+  [theme.breakpoints.down("sm")]: { display: "none" },
 }));
 
 const StyledAvatar = styled(Avatar)(() => ({
-  width: "32px !important",
-  height: "32px !important"
+  width: "32px",
+  height: "32px",
 }));
 
-export default function RowCards() {
-  return [1, 2, 3, 4].map((id) => (
-    <Fragment key={id}>
-      <Card sx={{ py: 1, px: 2 }} className="project-card">
-        <Grid container alignItems="center">
-          <Grid size={{ md: 5, xs: 7 }}>
-            <Box display="flex" alignItems="center">
-              <Checkbox />
 
-              {id % 2 === 1 ? (
-                <StyledFabStar size="small">
-                  <StarOutline />
-                </StyledFabStar>
-              ) : (
-                <StyledFab size="small">
-                  <DateRange />
-                </StyledFab>
-              )}
+export default function RowCards({ projects, onUpdate, onDelete }) {
+    const navigate = useNavigate();
+  const [editId, setEditId] = useState(null);
+  const [inputValue, setInputValue] = useState("");
 
-              <ProjectName>Project {id}</ProjectName>
-            </Box>
-          </Grid>
+  const handleSave = async (project) => {
+    if (!inputValue.trim()) return;
 
-          <Grid size={{ md: 3, xs: 4 }}>
-            <Box color="text.secondary">{format(new Date().getTime(), "MM/dd/yyyy hh:mma")}</Box>
-          </Grid>
+    if (project.isNew) {
+      await onUpdate(null, inputValue); // adding new
+    } else {
+      await onUpdate(project.id, inputValue);
+    }
 
-          <Grid size={3} sx={{ display: { xs: "none", sm: "block" } }}>
-            <Box display="flex" position="relative" marginLeft="-0.875rem !important">
-              <StyledAvatar src="/assets/images/face-4.jpg" />
-              <StyledAvatar src="/assets/images/face-4.jpg" />
-              <StyledAvatar src="/assets/images/face-4.jpg" />
-              <StyledAvatar sx={{ fontSize: "14px" }}>+3</StyledAvatar>
-            </Box>
-          </Grid>
+    setEditId(null);
+    setInputValue("");
+  };
 
-          <Grid size={1}>
-            <Box display="flex" justifyContent="flex-end">
-              <IconButton>
-                <MoreVert />
-              </IconButton>
-            </Box>
-          </Grid>
-        </Grid>
+  return projects.map((project) => (
+    <Fragment key={project.id}>
+      <Card sx={{ py: 1, px: 2, mb: 2 }}    onClick={() => navigate(`/training/document-table?id=${project.id}`)}>
+      <Grid container alignItems="center" justifyContent="space-between">
+  {/* LEFT SIDE - Project Icon + Name */}
+  <Grid item xs={12} sm={10}>
+    <Box display="flex" alignItems="center">
+      {project.id % 2 === 1 ? (
+        <StyledFabStar size="small">
+          <StarOutline />
+        </StyledFabStar>
+      ) : (
+        <StyledFabStar size="small">
+          <DateRange />
+        </StyledFabStar>
+      )}
+
+      {(editId === project.id || project.isNew) ? (
+        <TextField
+          fullWidth
+          value={inputValue}
+          variant="standard"
+          autoFocus
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={() => {
+            if (!project.isNew) handleSave(project);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave(project);
+          }}
+          sx={{ ml: 2 }}
+        />
+      ) : (
+        <ProjectName>{project.name || "Untitled"}</ProjectName>
+      )}
+    </Box>
+  </Grid>
+
+  {/* RIGHT SIDE - Buttons */}
+  <Grid item xs={12} sm={2}>
+    <Box display="flex" justifyContent="flex-end" gap={1}>
+      {!project.isNew && (
+        <Fab
+          color="primary"
+          size="small"
+          aria-label="Edit"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditId(project.id);
+            setInputValue(project.name);
+          }}
+        >
+          <EditIcon />
+        </Fab>
+      )}
+
+      {project.isNew && (
+        <Fab
+          color="primary"
+          size="small"
+          aria-label="Save"
+          onClick={(e) => {
+            e.stopPropagation(); // prevent card click
+            handleSave(project);
+          }}
+        >
+          <SaveIcon />
+        </Fab>
+      )}
+
+      <Fab
+        size="small"
+        aria-label="Delete"
+        sx={{ bgcolor: "error.main", color: "white" }}
+        onClick={(e) => {
+          e.stopPropagation(); // prevent card click
+          onDelete(project.id);
+        }}
+      >
+        <DeleteIcon />
+      </Fab>
+    </Box>
+  </Grid>
+</Grid>
+
       </Card>
-
-      <Box py={1} />
     </Fragment>
   ));
 }
+

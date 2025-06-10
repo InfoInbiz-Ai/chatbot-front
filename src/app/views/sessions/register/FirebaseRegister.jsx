@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { Formik } from "formik";
 import * as Yup from "yup";
-
+import { firebaseConfig } from "app/config";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid2";
@@ -62,22 +62,28 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid Email address").required("Email is required!")
 });
 
+function generateState() {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
 export default function FirebaseRegister() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
-  const { createUserWithEmail, signInWithGoogle } = useAuth();
+  const { createUserWithEmail } = useAuth();
 
-  const handleGoogleRegister = async () => {
-    try {
-      await signInWithGoogle();
-      navigate("/");
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
-  };
+  const backEndUrl =firebaseConfig.backEndUrl;
+
+
+  
+const handleLineLogin = () => {
+  const state = generateState();
+  localStorage.setItem('line_oauth_state', state);
+  
+  // Add frontend callback URL to state so backend knows where to redirect back
+  const frontendCallback = `${window.location.origin}/auth/line-callback`;
+  window.location.href = `${backEndUrl}/line/auth?state=${state}&frontend_callback=${encodeURIComponent(frontendCallback)}`;
+};
 
   const handleFormSubmit = async (values) => {
     try {
@@ -103,13 +109,47 @@ export default function FirebaseRegister() {
 
           <Grid size={{ md: 6, xs: 12 }}>
             <Box px={4} pt={4}>
-              <GoogleButton
-                fullWidth
-                variant="contained"
-                onClick={handleGoogleRegister}
-                startIcon={<img src="/assets/images/logos/google.svg" alt="google" />}>
-                Sign In With Google
-              </GoogleButton>
+            <Button
+    fullWidth
+    variant="outlined"
+    onClick={handleLineLogin}
+    startIcon={
+        <img 
+            src="/assets/images/logos/line.svg" 
+            alt="LINE" 
+            width={24}
+            height={24}
+            style={{ display: 'block' }}
+            onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTE5LjA0IDQuNTZjLTEuNDItLjUxLTMuMS4zLTMuNiAxLjgxLS4xMi4zNy0uMzkuNjUtLjczLjc0LTEuMDMuMy0xLjg2LS44My0xLjU1LTEuODYuMi0uNy42OS0xLjI5IDEuMzUtMS41OCAyLjExLS45MyA0LjU0LjQ3IDUuMSAyLjUzLjYgMi4xNS0uOTMgNC4yNS0zLjA4IDQuODNoLS4wNmMuMDEuMDcuMDEuMTUuMDEuMjMuMDQgMS4zNC0uNzcgMi41My0yLjA3IDIuODktMS4zNC4zNy0yLjcyLS4yNS0zLjMtMS40Mi0uMi0uNC0uNi0uNjUtMS4wNC0uNjVoLS4wMWMtLjc3IDAtMS4zOC42Ni0xLjI2IDEuNDIuMjUgMS41NyAxLjY2IDIuNzYgMy4yOCAyLjc2aC4zOGMtMS42NyAxLjItMy4wOCAyLjUtNC4xMiAzLjQ4LS41OS41Ni0xLjUyLjU3LTIuMTEuMDMtLjU4LS41NC0uNTgtMS40My4wMS0xLjk5IDEuNTQtMS40NyAzLjYzLTMuNDYgNC40Mi00LjkyaC0zLjE0Yy0xLjY3IDAtMy4xOS0xLjAxLTMuNzItMi41Ni0uNTYtMS42MS4xNC0zLjMyIDEuNjEtNC4yIDEuMzQtLjggMy4wNS0uNjggNC4yOC4zLjE4LjE1LjQuMjQuNjMuMjQuMzggMCAuNzMtLjIxLjktLjU2LjU2LTEuMTMgMS45My0xLjY0IDMuMTYtMS4xIDEuMDMuNDUgMS42NiAxLjQ3IDEuNjYgMi41NiAwIC44My0uMzcgMS42LTEuMDEgMi4xMS0uNjQuNTEtMS40Ni43LTIuMjYuNTIuMi44My42OSAxLjU2IDEuNCAxLjk1LjczLjQgMS41OC40MiAyLjMyLjA2LjcyLS4zNSAxLjIzLS45OCAxLjQtMS43Ni4xOS0uODgtLjA3LTEuNzgtLjY5LTIuNDQgMS41Mi0uMzggMi43LTEuNzQgMi43LTMuMzQgMC0xLjUzLTEuMTEtMi44Ny0yLjY0LTMuMTR6IiBmaWxsPSIjMDBDMzAwIi8+PC9zdmc+"
+            }}
+        />
+    }
+    sx={{ 
+        backgroundColor: 'white',
+        color: 'rgba(0, 0, 0, 0.87)',
+        border: '1px solid #e0e0e0',
+        textTransform: 'none',
+        fontSize: '16px',
+        padding: '8px 24px',
+        '&:hover': {
+            backgroundColor: '#f5f5f5',
+            border: '1px solid #e0e0e0',
+        },
+        '& .MuiButton-startIcon': {
+            marginRight: '12px',
+            '& img': {
+                width: '24px',
+                height: '24px',
+                // Ensures color is #00C300 even if SVG has inline color
+                filter: 'brightness(0) saturate(100%) invert(48%) sepia(96%) saturate(1265%) hue-rotate(72deg) brightness(99%) contrast(105%)'
+            }
+        }
+    }}
+>
+    Continue with LINE
+</Button>
             </Box>
 
             <MatxDivider sx={{ mt: 3, px: 4 }} text="Or" />
