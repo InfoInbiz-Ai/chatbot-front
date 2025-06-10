@@ -27,7 +27,7 @@ const StyledTable = styled(Table)(() => ({
   }
 }));
 
-const PaginationTable = ({ data,columns, onUpdate, onDelete }) => {
+const PaginationTable = ({ data, columns, onUpdate, onDelete, onEdit }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editingRow, setEditingRow] = useState(null);
@@ -45,11 +45,6 @@ const PaginationTable = ({ data,columns, onUpdate, onDelete }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
-  };
-
-  const handleEditClick = (index) => {
-    setEditingRow(index);
-    setEditForm(data[index]);
   };
 
   const handleCancel = () => {
@@ -76,7 +71,7 @@ const PaginationTable = ({ data,columns, onUpdate, onDelete }) => {
 
   return (
     <Box width="100%" overflow="auto">
- <StyledTable>
+      <StyledTable>
         <TableHead>
           <TableRow>
             {columns.map((col) => (
@@ -112,12 +107,16 @@ const PaginationTable = ({ data,columns, onUpdate, onDelete }) => {
                 <TableCell align="right">
                   {isEditing ? (
                     <Stack direction="row" spacing={1} justifyContent="flex-end">
-                      <Button variant="contained" size="small" onClick={handleSave}>Save</Button>
-                      <Button variant="outlined" size="small" onClick={handleCancel}>Cancel</Button>
+                      <Button variant="contained" size="small" onClick={handleSave}>
+                        Save
+                      </Button>
+                      <Button variant="outlined" size="small" onClick={handleCancel}>
+                        Cancel
+                      </Button>
                     </Stack>
                   ) : (
                     <Box>
-                      <IconButton onClick={() => handleEditClick(actualIndex)} size="small">
+                      <IconButton onClick={() => onEdit(row)} size="small">
                         <Icon color="primary">edit</Icon>
                       </IconButton>
                       <IconButton onClick={() => handleDeleteClick(actualIndex)} size="small">

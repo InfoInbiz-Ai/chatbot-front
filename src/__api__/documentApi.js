@@ -1,4 +1,3 @@
-
 import Swal from "sweetalert2";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
@@ -10,30 +9,42 @@ const DocumentApi = {
     if (pageToken) params.append("pageToken", pageToken);
 
     const response = await fetch(`${BASE_URL}/documents?${params}`);
-    console.log('response',response)
+    console.log("response", response);
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to fetch documents");
     return json.data;
   },
 
-  async addDocument({ kbId, ...document }) {
-    const payload = { ...document, kbId };
-    console.log('document',document)
+  async addDocument({ kbId, displayName, ...rest }) {
+    const payload = { ...rest, kbId, displayName: displayName };
+    console.log("document payload", payload);
+
     const response = await fetch(`${BASE_URL}/documents`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
+
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to add document");
+
     Swal.fire("Success", "Document added successfully", "success");
   },
+  async getSingleKB(kbId, documentId) {
+    const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`);
+    const json = await response.json();
 
+    if (!response.ok || !json.success) {
+      throw new Error(json.message || "Failed to fetch Knowledge Base");
+    }
+
+    return json.data;
+  },
   async updateDocument(kbId, documentId, updatedDocument) {
     const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedDocument),
+      body: JSON.stringify(updatedDocument)
     });
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to update document");
@@ -42,12 +53,12 @@ const DocumentApi = {
 
   async deleteDocument(kbId, documentId) {
     const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`, {
-      method: "DELETE",
+      method: "DELETE"
     });
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to delete document");
     Swal.fire("Deleted", "Document deleted successfully", "success");
-  },
+  }
 };
 
 export default DocumentApi;

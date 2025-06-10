@@ -41,7 +41,8 @@ const navigations = [
   {
     name: "Bot Training",
     icon: "android",
-    children: [{ name: "Bot Training Data", path: "/training/bot-training", iconText: "E" },
+    children: [
+      { name: "Projects", path: "/training/projects", iconText: "E" },
       { name: "Training Category", path: "/training/training-category", iconText: "E" }
     ]
   },
