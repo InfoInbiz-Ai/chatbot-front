@@ -1,0 +1,21 @@
+[debug] [2025-06-12T08:06:13.238Z] ----------------------------------------------------------------------
+[debug] [2025-06-12T08:06:13.241Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-06-12T08:06:13.241Z] CLI Version:   14.6.0
+[debug] [2025-06-12T08:06:13.241Z] Platform:      win32
+[debug] [2025-06-12T08:06:13.242Z] Node Version:  v22.15.0
+[debug] [2025-06-12T08:06:13.242Z] Time:          Thu Jun 12 2025 14:36:13 GMT+0630 (Myanmar Time)
+[debug] [2025-06-12T08:06:13.242Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-06-12T08:06:13.247Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-06-12T08:06:13.247Z] > authorizing via signed-in user (info@inbiz-ai.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  D:\TAG\chat-bot-front
+
