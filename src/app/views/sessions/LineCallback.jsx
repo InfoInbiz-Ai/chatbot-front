@@ -1,6 +1,6 @@
-import { useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthContext from 'app/contexts/FirebaseAuthContext';
+import { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "app/contexts/FirebaseAuthContext";
 
 const LineCallback = () => {
   const navigate = useNavigate();
@@ -24,10 +24,10 @@ const LineCallback = () => {
           navigate("/");
         })
         .catch(() => {
-          navigate("/login");
+          navigate("/session/signin");
         });
     } else {
-      navigate("/login");
+      navigate("/session/signin");
     }
   }, [signInWithLine, navigate]);
 

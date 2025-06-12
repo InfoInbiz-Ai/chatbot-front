@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, Fragment } from "react";
 import { Box, Button, Grid, Pagination, TextField } from "@mui/material";
 import RowCards from "../dashboard/shared/RowCards";
-import CategoryApi from "../../../__api__/categoryApi"; 
+import CategoryApi from "../../../__api__/categoryApi";
 import Swal from "sweetalert2";
 
 const ITEMS_PER_PAGE = 5;
@@ -11,13 +11,13 @@ export default function Category() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);  // <-- added state
+  const [deletingId, setDeletingId] = useState(null); // <-- added state
   const isAddingNewRow = projects.some((p) => p.isNew);
 
   const fetchCategories = async (filter = "") => {
     setLoading(true);
     try {
-      const response = await CategoryApi.fetchCategories({ filter, pageSize: 5 }); 
+      const response = await CategoryApi.fetchCategories({ filter, pageSize: 5 });
 
       setProjects(response.data);
     } catch (err) {
@@ -25,13 +25,11 @@ export default function Category() {
     }
     setLoading(false);
   };
-  
+
   useEffect(() => {
     fetchCategories(searchTerm);
     setPage(1);
   }, [searchTerm]);
-  
-
 
   const refetch = async () => {
     await fetchCategories(searchTerm);
@@ -47,7 +45,7 @@ export default function Category() {
     const newProject = {
       id: `temp-${Date.now()}`,
       name: "",
-      isNew: true,
+      isNew: true
     };
     setProjects((prev) => [newProject, ...prev]);
     setPage(1);
@@ -69,38 +67,43 @@ export default function Category() {
     }
   };
   const handleDelete = async (id) => {
+    // Handle unsaved (temporary) items
     if (id.toString().startsWith("temp-")) {
-      // Just remove from local projects if it's a temp (unsaved) item
       setProjects((prev) => prev.filter((p) => p.id !== id));
       return;
     }
-  
+
+    // Ask for confirmation
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "This category will be deleted.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, delete it!"
     });
-  
+
     if (result.isConfirmed) {
       try {
         setDeletingId(id);
-        await CategoryApi.deleteCategory(id);
-        // Immediately remove deleted project from UI
-        setProjects((prev) => prev.filter((p) => p.id !== id));
+
+        // Attempt deletion via API
+        const response = await CategoryApi.deleteCategory(id);
+
+        if (response === "success") {
+          // Only remove from UI if deletion succeeded
+          setProjects((prev) => prev.filter((p) => p.id !== id));
+        }
+
         setPage(1);
-        // Optionally refetch if you want to refresh data from backend
-        // await refetch();
       } catch (err) {
-        Swal.fire("Error", err.message, "error");
+        // Show backend error message from err.message
+        Swal.fire("Error", err.message || "Failed to delete category", "error");
       } finally {
         setDeletingId(null);
       }
     }
   };
-  
 
   return (
     <Fragment>
@@ -114,7 +117,7 @@ export default function Category() {
                 justifyContent: "space-between",
                 paddingLeft: "1rem",
                 marginBottom: "1rem",
-                gap: "1rem",
+                gap: "1rem"
               }}
             >
               <h4
@@ -123,7 +126,7 @@ export default function Category() {
                   fontWeight: 500,
                   color: "gray",
                   paddingLeft: "1rem",
-                  marginBottom: "1rem",
+                  marginBottom: "1rem"
                 }}
               >
                 Training Data
