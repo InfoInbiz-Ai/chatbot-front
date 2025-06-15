@@ -1,5 +1,12 @@
+// src/__api__/documentApi.js
 import Swal from "sweetalert2";
+
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+const COMMON_HEADERS_JSON = {
+  "Content-Type": "application/json",
+  "ngrok-skip-browser-warning": "1"
+};
 
 const DocumentApi = {
   async fetchDocuments({ kbId, pageSize = 10, pageToken = null }) {
@@ -8,7 +15,9 @@ const DocumentApi = {
     params.append("pageSize", pageSize);
     if (pageToken) params.append("pageToken", pageToken);
 
-    const response = await fetch(`${BASE_URL}/documents?${params}`);
+    const response = await fetch(`${BASE_URL}/documents?${params}`, {
+      headers: { "ngrok-skip-browser-warning": "1" }
+    });
     console.log("response", response);
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to fetch documents");
@@ -16,12 +25,12 @@ const DocumentApi = {
   },
 
   async addDocument({ kbId, displayName, ...rest }) {
-    const payload = { ...rest, kbId, displayName: displayName };
+    const payload = { ...rest, kbId, displayName };
     console.log("document payload", payload);
 
     const response = await fetch(`${BASE_URL}/documents`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: COMMON_HEADERS_JSON,
       body: JSON.stringify(payload)
     });
 
@@ -30,8 +39,11 @@ const DocumentApi = {
 
     Swal.fire("Success", "Document added successfully", "success");
   },
+
   async getSingleKB(kbId, documentId) {
-    const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`);
+    const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`, {
+      headers: { "ngrok-skip-browser-warning": "1" }
+    });
     const json = await response.json();
 
     if (!response.ok || !json.success) {
@@ -40,10 +52,11 @@ const DocumentApi = {
 
     return json.data;
   },
+
   async updateDocument(kbId, documentId, updatedDocument) {
     const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: COMMON_HEADERS_JSON,
       body: JSON.stringify(updatedDocument)
     });
     const json = await response.json();
@@ -53,7 +66,8 @@ const DocumentApi = {
 
   async deleteDocument(kbId, documentId) {
     const response = await fetch(`${BASE_URL}/documents/${kbId}/${documentId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: { "ngrok-skip-browser-warning": "1" }
     });
     const json = await response.json();
     if (!response.ok || !json.success) throw new Error(json.message || "Failed to delete document");
