@@ -79,13 +79,11 @@ const FirebaseRoot = styled("div")(({ theme }) => ({
   }
 }));
 
-// initial login credentials
 const initialValues = {
-  email: "minthwaykhaing28@gmail.com",
-  password: "1qaz!QAZ",
+  email: "jason@ui-lib.com",
+  password: "dummyPass",
   remember: true
 };
-
 // form field validation schema
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -103,7 +101,7 @@ export default function FirebaseLogin() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const { signInWithEmail} = useAuth();
+  const { signInWithEmail,signInWithGoogle} = useAuth();
 
   const redirectUri =firebaseConfig.lineRedirectUrl;
   const backEndUrl =firebaseConfig.backEndUrl;
@@ -121,14 +119,27 @@ export default function FirebaseLogin() {
     }
   };
 
-const handleLineLogin = () => {
-  const state = generateState();
-  localStorage.setItem('line_oauth_state', state);
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithGoogle();
+      navigate("/");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleLineLogin = () => {
+    const state = generateState();
+    localStorage.setItem('line_oauth_state', state);
   
-  // Add frontend callback URL to state so backend knows where to redirect back
-  const frontendCallback = `${window.location.origin}/auth/line-callback`;
-  window.location.href = `${backEndUrl}/line/auth?state=${state}&frontend_callback=${encodeURIComponent(frontendCallback)}`;
-};
+    const clientId = firebaseConfig.lineChannelId;
+    const redirectUri = encodeURIComponent(firebaseConfig.lineRedirectUrl); // this points to your Make.com webhook
+  
+    const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=profile%20openid%20email`;
+  
+    window.location.href = lineAuthUrl;
+  };
+  
 
   
 
@@ -160,6 +171,15 @@ const handleLineLogin = () => {
           </Grid>
 
           <Grid size={{ md: 6, xs: 12 }}>
+          {/* <Box px={4} pt={4}>
+              <GoogleButton
+                fullWidth
+                variant="contained"
+                onClick={handleGoogleLogin}
+                startIcon={<img src="/assets/images/logos/google.svg" alt="google" />}>
+                Sign In With Google
+              </GoogleButton>
+            </Box> */}
           <Box px={4} pt={4}>
           <Button
     fullWidth
@@ -206,7 +226,7 @@ const handleLineLogin = () => {
 
 
             <MatxDivider sx={{ mt: 3, px: 4 }} text="Or" />
-
+    
             <Box p={4}>
               <Formik
                 onSubmit={handleFormSubmit}

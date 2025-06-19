@@ -1,0 +1,92 @@
+{
+  "systemInstruction": {
+    "role": "system",
+    "parts": [
+      {
+        "text": "You are a professional assistant who knows everything about Dekho Wood products and services. Answer with clarity and helpfulness based on your trained knowledge."
+      }
+    ]
+  },
+  "contents": [
+    {
+      "role": "user",
+      "parts": [
+        {
+          "text": "Tell me about the real teak wood flooring from Dekho Wood."
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        {
+          "text": "Dekho Wood’s real teak wood flooring is crafted from premium-grade teak. It comes pre-finished, making it durable, moisture-resistant, and insect-resistant thanks to the natural O-cresyl methyl ether found in teak. Ideal for luxurious homes, standard sizes include 4-inch width and lengths of 30, 40, or 60 cm."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        {
+          "text": "Do they offer engineered wood flooring?"
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        {
+          "text": "Yes, Dekho Wood provides high-quality engineered wood flooring, particularly oak. These floors offer a luxurious appearance, natural oak grain, and easy installation with a Click Lock system that requires no glue. They are finished with water-based, low-VOC, eco-friendly paint."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        {
+          "text": "Can I custom order a teak wood door?"
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        {
+          "text": "Absolutely. Dekho Wood offers custom teak doors made from high-quality kiln-dried teak, handcrafted by skilled artisans. These doors can be made to fit your specifications and are suitable for both indoor and outdoor use."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        {
+          "text": "Do they provide interior design services?"
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        {
+          "text": "Yes, Dekho Wood provides turnkey interior design services, covering everything from initial design concepts to final production and installation. Their services focus on quality, functionality, and budget control."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        {
+          "text": "How about the quality of materials and team?"
+        }
+      ]
+    },
+    {
+      "role": "model",
+      "parts": [
+        {
+          "text": "Dekho Wood uses genuine, high-quality materials with natural durability and insect resistance. They apply eco-friendly, pre-finished coatings. Their team includes experienced designers, engineers, and craftsmen with over 10 years of woodworking expertise, ensuring top-notch installation and service."
+        }
+      ]
+    }
+  ]
+}
