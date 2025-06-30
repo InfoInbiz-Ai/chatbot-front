@@ -58,24 +58,49 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInWithEmail = async (email, password) => {
-    // Mock check
-    if (email === "jason@ui-lib.com" && password === "dummyPass") {
-      // Mock user data
-      const user = {
-        id: "mock-uid-12345",
-        email: "jason@ui-lib.com",
+    // Mock users data
+    const mockUsers = [
+      {
+        email: "Dekhowood@gmail.com",
+        password: "1qaz!QAZ",
+        name: "Dekhowood",
+      },
+      {
+        email: "AIS@gmail.com",
+        password: "AIS1qaz!QAZ",
+        name: "AIS",
+      },
+    ];
+  
+    const user = mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+  
+    if (user) {
+      // If AIS, set companyName in session
+      if (user.name === "AIS") {
+        sessionStorage.setItem("companyName", "AIS");
+        window.location.reload();
+      }
+  
+      // Mock token
+      const token = "mock-token-" + Math.random().toString(36).substr(2, 9);
+  
+      const userData = {
+        id: "mock-uid-" + Date.now(),
+        email: user.email,
+        name: user.name,
         avatar: null,
-        name: "Jason Mock",
-        token: "mock-token-abcde12345",
+        token: token,
       };
   
-      localStorage.setItem("accessToken", user.token);
-      dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: true, user } });
+      localStorage.setItem("accessToken", token);
+      dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: true, user: userData } });
   
-      return user;
+      return userData;
     }
   
-    // For any other credentials, simulate login failure
+    // Login failure
     throw new Error("Invalid email or password");
   };
   

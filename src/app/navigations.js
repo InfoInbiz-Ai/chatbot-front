@@ -43,7 +43,7 @@ const navigations = [
     icon: "android",
     children: [
       // { name: "Projects", path: "/training/projects", iconText: "E" },
-      { name: "Training Category", path: "/training/training-category", iconText: "E" }
+      { name: "Training Category", path: "/training/agent", iconText: "E" }
     ]
   }
   // {

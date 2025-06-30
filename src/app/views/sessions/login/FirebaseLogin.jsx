@@ -80,8 +80,8 @@ const FirebaseRoot = styled("div")(({ theme }) => ({
 }));
 
 const initialValues = {
-  email: "jason@ui-lib.com",
-  password: "dummyPass",
+  email: "",
+  password: "",
   remember: true
 };
 // form field validation schema
