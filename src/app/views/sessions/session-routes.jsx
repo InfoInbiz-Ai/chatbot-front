@@ -9,11 +9,15 @@ const LineCallback = lazy(() => import("./LineCallback"));
 // const JwtLogin = Loadable(lazy(() => import("./login/JwtLogin")));
 // const JwtRegister = Loadable(lazy(() => import("./register/JwtRegister")));
 // const Auth0Login = Loadable(lazy(() => import("./login/Auth0Login")));
-
+import CompanySelector from "./CompanySelector";
 const sessionRoutes = [
   {
-    path: '/auth/line-callback',
+    path: "/auth/line-callback",
     element: <LineCallback />
+  },
+  {
+    path: "/auth/line-company-selector",
+    element: <CompanySelector />
   },
   { path: "/session/signup", element: <FirebaseRegister /> },
   { path: "/session/signin", element: <FirebaseLogin /> },
