@@ -1,18 +1,12 @@
 import { createContext, useEffect, useReducer } from "react";
 import axios from "axios";
 import Loading from "app/components/MatxLoading";
-import {
-
-  signInWithPopup,
-  GoogleAuthProvider,
-
-} from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 
 import { firebaseConfig } from "app/config";
 import { initializeApp } from "firebase/app";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -21,17 +15,17 @@ const AuthContext = createContext({
   isInitialized: false,
   isAuthenticated: false,
   method: "CUSTOM_BACKEND",
-  signInWithGoogle:()=>{},
+  signInWithGoogle: () => {},
   signInWithEmail: () => {},
   createUserWithEmail: () => {},
   logout: () => {},
-  signInWithLine: () => {},
+  signInWithLine: () => {}
 });
 
 const initialAuthState = {
   user: null,
   isInitialized: false,
-  isAuthenticated: false,
+  isAuthenticated: false
 };
 
 const reducer = (state, action) => {
@@ -41,7 +35,7 @@ const reducer = (state, action) => {
         ...state,
         isAuthenticated: action.payload.isAuthenticated,
         isInitialized: true,
-        user: action.payload.user,
+        user: action.payload.user
       };
     default:
       return state;
@@ -51,7 +45,6 @@ const reducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
 
-  
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
@@ -63,54 +56,49 @@ export const AuthProvider = ({ children }) => {
       {
         email: "Dekhowood@gmail.com",
         password: "1qaz!QAZ",
-        name: "Dekhowood",
+        name: "Dekhowood"
       },
       {
         email: "AIS@gmail.com",
         password: "AIS1qaz!QAZ",
-        name: "AIS",
-      },
+        name: "AIS"
+      }
     ];
-  
-    const user = mockUsers.find(
-      (u) => u.email === email && u.password === password
-    );
-  
+
+    const user = mockUsers.find((u) => u.email === email && u.password === password);
+
     if (user) {
       // If AIS, set companyName in session
       if (user.name === "AIS") {
         sessionStorage.setItem("companyName", "AIS");
-        window.location.reload();
       }
-  
+
       // Mock token
       const token = "mock-token-" + Math.random().toString(36).substr(2, 9);
-  
+
       const userData = {
         id: "mock-uid-" + Date.now(),
         email: user.email,
         name: user.name,
         avatar: null,
-        token: token,
+        token: token
       };
-  
+
       localStorage.setItem("accessToken", token);
       dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: true, user: userData } });
-  
+
       return userData;
     }
-  
+
     // Login failure
     throw new Error("Invalid email or password");
   };
-  
+
   // const signInWithEmail = async (email, password) => {
   //   const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
   //   console.log('user',response)
   //   const userData = response.data;
 
-
-    
   //   const user = {
   //     id: userData.uid,
   //     email: userData.email,
@@ -127,13 +115,13 @@ export const AuthProvider = ({ children }) => {
   const signInWithLine = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) throw new Error("No access token found");
-  
+
     const user = {
       id: localStorage.getItem("uid"),
       name: "LINE User",
       token
     };
-  
+
     dispatch({
       type: "AUTH_STATE_CHANGED",
       payload: {
@@ -141,10 +129,9 @@ export const AuthProvider = ({ children }) => {
         user
       }
     });
-  
+
     return user;
   };
-  
 
   const createUserWithEmail = async (email, password) => {
     const response = await axios.post(`${API_BASE_URL}/signup`, { email, password });
@@ -153,9 +140,10 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("accessToken");
+    sessionStorage.removeItem("companyName");
+
     dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: false, user: null } });
   };
-
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -169,9 +157,9 @@ export const AuthProvider = ({ children }) => {
             email: "user@example.com",
             name: "User",
             avatar: null,
-            token,
-          },
-        },
+            token
+          }
+        }
       });
     } else {
       dispatch({ type: "AUTH_STATE_CHANGED", payload: { isAuthenticated: false, user: null } });
@@ -189,7 +177,7 @@ export const AuthProvider = ({ children }) => {
         createUserWithEmail,
         signInWithGoogle,
         logout,
-        signInWithLine,
+        signInWithLine
       }}
     >
       {children}
@@ -198,4 +186,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
-

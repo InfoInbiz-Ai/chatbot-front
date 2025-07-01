@@ -2,11 +2,13 @@ import Swal from "sweetalert2";
 
 const getBaseMakeUrl = () => {
   const companyName = sessionStorage.getItem("companyName");
-  console.log("companyName",companyName)
+  console.log("companyName", companyName);
   if (companyName === "AIS") {
-    return "AISwebhook";
+    return "https://hook.eu2.make.com/alpp34ehnustwnfpjwbjq9nvopukbuz0";
   }
-  return import.meta.env.BASE_MAKE_URL || "https://hook.eu2.make.com/jtrmhe5sycxd1ni2oy90iuielb17fzh1";
+  return (
+    import.meta.env.BASE_MAKE_URL || "https://hook.eu2.make.com/jtrmhe5sycxd1ni2oy90iuielb17fzh1"
+  );
 };
 
 const COMMON_HEADERS_JSON = {
@@ -25,7 +27,6 @@ const MakeApi = {
       if (!response.ok) throw new Error("Failed to insert agent");
 
       Swal.fire("Success", "Agent added successfully", "success");
-
     } catch (error) {
       Swal.fire("Error", error.message, "error");
       throw error;
@@ -41,7 +42,6 @@ const MakeApi = {
 
       if (!response.ok) throw new Error("Failed to delete agent");
       Swal.fire("Deleted", "Agent deleted successfully", "success");
-
     } catch (error) {
       Swal.fire("Error", error.message, "error");
       throw error;
@@ -76,7 +76,7 @@ const MakeApi = {
 
   async getAllAgents({ searchString = "", page = 1, limit = 20 } = {}) {
     try {
-      console.log('url:',getBaseMakeUrl())
+      console.log("url:", getBaseMakeUrl());
       const url = new URL(getBaseMakeUrl());
       url.searchParams.append("searchString", searchString);
       url.searchParams.append("page", page);
